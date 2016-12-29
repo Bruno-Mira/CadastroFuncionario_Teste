@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3c.org/1999/xhtml"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+ <meta charset= "UTF-8"/>
+</h:head>
+<h:body>
+	
+	<h:form id="formFuncionario" class="conteiner" style="text-align:center" >
+		<p:panelGrid columns="2"  style="margin:10px 10px 10px 38%" cellpadding="5">
+			<p:outputLabel value="Nome"  />
+			<p:inputText value="#{funcionarioMB.funcionario.nome}" required="true" />
+			
+			<p:outputLabel value="Idade"  />
+			<p:inputText type="number"  value="#{funcionarioMB.funcionario.idade}" required="true" />
+			
+			<p:outputLabel for="Sexo" value="Sexo:" />
+	        <p:selectOneRadio id="Sexo" value="#{funcionarioMB.funcionario.sexo}" required="true">
+	            <f:selectItem itemLabel="Masculino" itemValue="Masculino" />
+	            <f:selectItem itemLabel="Feminino" itemValue="Feminino" />
+	            <f:selectItem itemLabel="Outros" itemValue="Outros" />
+	        </p:selectOneRadio>
+	        
+	        <p:outputLabel for="estCivil" value="Estado Civil:" />
+	        <p:selectOneMenu id="estCivil" value="#{funcionarioMB.funcionario.estadoCivil}" style="width:125px">
+	            <f:selectItem itemLabel="Casado" itemValue="Casado" />
+	            <f:selectItem itemLabel="Solteiro" itemValue="Solteiro" />
+	            <f:selectItem itemLabel="Viúvo" itemValue="Viúvo" />
+	        </p:selectOneMenu>
+	        
+	        <h:outputText value="Possui Filhos?: " />
+       		 <p:inputSwitch onLabel="Sim" offLabel="Não" value="#{funcionarioMB.funcionario.filhos}" />
+	       </p:panelGrid> <br/>
+	        
+			<p:commandButton value="Salvar" style="text-aling:left" action="#{funcionarioMB.salvarBanco}" update=":formDataList , :formFuncionario" />
+			
+	</h:form>
+	
+	<br/>
+	<h:form id="formDataList"  >
+	
+		<p:dataTable var="cl" value="#{funcionarioMB.allFuncionario}" editable="true" id="tableFunc" rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" style="text-align:center" 
+                         widgetVar="funcTable" emptyMessage="Nenhum funcionário encontrado" filteredValue="#{funcionarioMB.filtroFunc}"
+                         >
+                         
+		<!-- Cabeçalho e filtro -->
+		
+		<f:facet name="header">
+			<h:outputText value="Procurar em todas as Colunas: " />
+			<p:inputText id="globalFilter" onkeyup="PF('funcTable').filter()" placeholder="Enter keyword" />
+		</f:facet>
+		
+		<!-- ********************************************************************************************************************-->
+				<!-- Coluna do Nome, Filtro do tipo "Texto contido" -->
+				
+			<p:column headerText="Nome" filterBy="#{cl.nome}" filterMatchMode="contains">
+				<p:cellEditor>
+					<f:facet name="output"><h:outputText value="#{cl.nome}" /> </f:facet>
+					<f:facet name="input"> <p:inputText id="idclname" value="#{cl.nome}" style="width:100%" /> </f:facet>
+				</p:cellEditor>
+			</p:column>
+			
+		<!-- ******************************************************************************************************************** -->
+				<!-- Coluna da Idade, Filtro do tipo "Valores Menores que" -->
+				
+			<p:column headerText="Idade" filterBy="#{cl.idade}" filterMatchMode="lte">
+				<f:facet name="filter">
+					<p:spinner onchange="PF('funcTable').filter()" styleClass="idade-spinner">
+						<f:converter converterId="javax.faces.Integer" />
+					</p:spinner>
+				</f:facet>
+				<p:cellEditor>
+					<f:facet name="output"><h:outputText value="#{cl.idade}" /> </f:facet>
+					<f:facet name="input"> <p:inputText id="idclidade" value="#{cl.idade}" style="width:100%" /> </f:facet>
+				</p:cellEditor>
+			</p:column>
+			<!-- ******************************************************************************************************************** -->
+				<!-- Coluna do Sexo, Filtro do tipo "esta entre" -->
+				
+			<p:column headerText="Sexo" filterBy="#{cl.sexo}" filterMatchMode="in">
+				<f:facet name="filter">
+	                <p:selectCheckboxMenu label="Todos" onchange="PF('funcTable').filter()" panelStyle="width:125px" scrollHeight="150">
+	                    <f:selectItem itemLabel="Masculino" itemValue="Masculino" />
+			            <f:selectItem itemLabel="Feminino" itemValue="Feminino" />
+			            <f:selectItem itemLabel="Outros" itemValue="Outros" />
+	                </p:selectCheckboxMenu>
+                </f:facet>
+				<p:cellEditor>
+					<f:facet name="output"><h:outputText value="#{cl.sexo}" /> </f:facet>
+					<f:facet name="input"> <p:inputText id="idclsexo" value="#{cl.sexo}" style="width:100%" /> </f:facet>
+				</p:cellEditor>
+			</p:column>
+			
+			<!-- ******************************************************************************************************************** -->
+				<!-- Coluna do Estado Civil, Filtro do tipo "Padrão de Lista ComboBox" -->
+				
+			<p:column headerText="Estado Civil" filterBy="#{cl.estadoCivil}" filterMatchMode="exact">
+			<f:facet name="filter">
+						<p:selectOneMenu onchange="PF('funcTable').filter()">
+	                   		 <f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true" />
+		                     <f:selectItem itemLabel="Casado" itemValue="Casado" />
+					         <f:selectItem itemLabel="Solteiro" itemValue="Solteiro" />
+					         <f:selectItem itemLabel="Viúvo" itemValue="Viúvo" />
+						</p:selectOneMenu>
+					</f:facet>
+				<p:cellEditor>
+					<f:facet name="output"><h:outputText value="#{cl.estadoCivil}" /> </f:facet>
+					<f:facet name="input"> <p:inputText id="idclcivil" value="#{cl.estadoCivil}" style="width:100%" /> </f:facet>
+				</p:cellEditor>
+			</p:column>
+			
+			<!-- ******************************************************************************************************************** -->
+				<!-- Coluna do filho, Filtro do tipo "Igual a,  Verdadeiro, Falso ou nulo" -->
+				
+			<p:column headerText="Possui Filhos?"  filterBy="#{cl.filhos}" filterMatchMode="equals">
+				<f:facet name="filter">
+					<p:selectOneButton style="font-size:12px" onchange="PF('funcTable').filter()">
+					 <f:converter converterId="javax.faces.Boolean" />
+                    <f:selectItem itemLabel="Todos" itemValue="" />
+                    <f:selectItem itemLabel="Possui" itemValue="true" />
+                    <f:selectItem itemLabel="Não Possui" itemValue="false" />
+					</p:selectOneButton>
+				</f:facet>
+				<p:cellEditor>
+					<f:facet name="output"><h:outputText value="#{cl.filhos? 'Possui' : 'Não Possui'}" /> </f:facet>
+					<f:facet name="input"> <p:inputText id="idclfilhos" value="#{cl.filhos}" style="width:100%" /> </f:facet>
+				</p:cellEditor>
+			</p:column>
+			<p:column>
+				<p:rowEditor/>
+				<p:commandLink id="remover" styleClass="ui-icon ui-icon-trash"
+						actionListener="#{funcionarioMB.deletarBanco(cl)}"
+						update=":formDataList:tableFunc" />
+			</p:column>
+			
+		</p:dataTable>
+	
+	</h:form>
+
+</h:body>
+
+</html>
